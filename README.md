@@ -1,4 +1,4 @@
-# data-pipeline
+# nba-mlops
 
 ## Description
 This project demonstrates the implementation of data pipelines in an AI context. It utilizes DVC (Data Version Control) for data versioning and management. The pipelines are designed to efficiently process and transform data, enabling seamless integration with AI models and workflows.
