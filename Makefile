@@ -68,5 +68,5 @@ safety:
 
 setup: clean-venv add-venv install-dev install
 
-run:
-	python3 -m mlops_nba.main
+extract-rising-stars:
+	python3 -m mlops_nba.potential_stars.extract
