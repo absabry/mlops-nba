@@ -1,6 +1,5 @@
-
 import setuptools
-from data_pipeline import __version__
+from mlops_nba import __version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()

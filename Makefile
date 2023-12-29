@@ -1,4 +1,4 @@
-dir=data_pipeline
+dir=mlops_nba
 VENV=venv
 PYTHON_VERSION=3
 PRECOMMIT=$(VENV)/bin/pre-commit
@@ -69,4 +69,4 @@ safety:
 setup: clean-venv add-venv install-dev install
 
 run:
-	python3 -m data_pipeline.main
+	python3 -m mlops_nba.main
