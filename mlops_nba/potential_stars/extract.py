@@ -3,10 +3,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from mlops_nba.common.io import detect_encoding
+from mlops_nba.common.io import create_folder
+from mlops_nba.common.dates import get_now
 from mlops_nba.config import CURATED_DATA_DIR, RAW_DATA_DIR
 
-OUTPUT_FILENAME = "potential-stars.parquet"
+OUTPUT_FILENAME = "curated_players"
 # can be automated in next versions
 AGE_THRESHOLD = 23
 POINTS_THRESHOLD = 10
@@ -36,8 +37,8 @@ def get_raw_data(path: Path):
     return players
 
 
-if __name__ == "__main__":
-    players = get_raw_data(path=RAW_DATA_DIR)
+def create_nba_features(players: pd.DataFrame) -> pd.DataFrame:
+    """Create features from raw data."""
     players["efficency"] = (
         players.PTS
         + players.TRB
@@ -48,11 +49,24 @@ if __name__ == "__main__":
         - (players.FTA - players.FT)
         - players.TOV
     )
-    rising_stars = (
-        players.query(
-            f"(efficency >= {EFFICENCY_THRESHOLD}) & (PTS >= {POINTS_THRESHOLD}) & (Age <= {AGE_THRESHOLD})"
-        )
-        .sort_values("efficency", ascending=False)
-        .sort_values(["efficency", "Age"], ascending=True)
+    return players
+
+
+def stars_definition(row):
+    """Define rising stars."""
+    return (
+        row["efficency"] >= EFFICENCY_THRESHOLD
+        and row["PTS"] >= POINTS_THRESHOLD
+        and row["Age"] <= AGE_THRESHOLD
     )
-    players.to_parquet(CURATED_DATA_DIR / OUTPUT_FILENAME, compression="snappy")
+
+
+if __name__ == "__main__":
+    current_date = get_now(for_files=True)
+    _ = create_folder(path=CURATED_DATA_DIR)
+
+    players = get_raw_data(path=RAW_DATA_DIR)
+    players = create_nba_features(players=players)
+    players["rising_stars"] = players.apply(stars_definition, axis=1)
+
+    players.to_parquet(CURATED_DATA_DIR / f"{OUTPUT_FILENAME}-{current_date}.parquet", compression="snappy")

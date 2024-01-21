@@ -70,3 +70,5 @@ setup: clean-venv add-venv install-dev install
 
 extract-rising-stars:
 	python3 -m mlops_nba.potential_stars.extract
+
+run: extract-rising-stars
