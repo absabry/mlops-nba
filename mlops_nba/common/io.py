@@ -1,5 +1,6 @@
-from pathlib import Path
 import json
+from pathlib import Path
+
 import chardet
 
 
@@ -21,14 +22,17 @@ def create_folder(path: Path) -> bool:
 
 
 def write_metadata(data: dict, path: Path) -> bool:
-    """Write json file.
+    """Write the metadata file. If it already exists, append
+    new info on the json file and write it again
     Args:
         data (dict): data to write
         path (Path): path to write to
     """
+    metadata = json.load(open(path, "r")) if path.exists() else {}
     try:
         with open(path, "w") as f:
-            json.dump(data, f)
+            metadata.update(data)
+            json.dump(metadata, f)
             return True
     except Exception as e:
         print(e)

@@ -1,21 +1,15 @@
-import pandas as pd
 import click
-from nba_api.stats.endpoints.leaguegamefinder import LeagueGameFinder
-from nba_api.stats.static import teams
+import pandas as pd
 from nba_api.stats.endpoints.boxscoretraditionalv2 import BoxScoreTraditionalV2
+from nba_api.stats.endpoints.leaguegamefinder import LeagueGameFinder
+
+from mlops_nba.common.dates import convert_eu_to_us, get_now
 from mlops_nba.common.io import create_folder, write_metadata
-from mlops_nba.common.dates import get_day, get_today, get_now, convert_eu_to_us
 from mlops_nba.config import PRE_RAW_DATA_DIR
+from mlops_nba.data_pipeline.ingest.utils import create_output_prefix, get_teams
 
 
-def create_output_prefix(start_date: str, end_date: str = None) -> str:
-    """Create output prefix based on start and end dates."""
-    start_date_px = get_day(start_date)
-    end_date_px = get_day(end_date) if end_date else get_today()
-    return f"{start_date_px}_{end_date_px}"
-
-
-def get_games(start_date: str, end_date: str = None) -> pd.DataFrame:
+def get_games(start_date: str, end_date: str = None) -> None:
     """Get all nba games between start_date and end_date.
 
     If end_date is None, we get data until today.
@@ -30,8 +24,7 @@ def get_games(start_date: str, end_date: str = None) -> pd.DataFrame:
 
     # filter on nba_teams only, as the leaguegamefinder does not filter
     # on nba teams only correctly.
-    nba_teams = teams.get_teams()
-    nba_ids = [team["id"] for team in nba_teams]
+    nba_ids = get_teams()
     nba_games_dataframe = games[games.TEAM_ID.isin(nba_ids)]
 
     # keep unique games only
@@ -50,16 +43,21 @@ def main(start_date: str, end_date: str = None) -> pd.DataFrame:
 
     games = get_games(start_date, end_date)
     boxscores = pd.concat(
-        [BoxScoreTraditionalV2(game_id=game).get_data_frames()[0] for game in games]
+        [
+            BoxScoreTraditionalV2(game_id=game, timeout=60).get_data_frames()[0]
+            for game in games
+        ]
     )
     boxscores.to_csv(PRE_RAW_DATA_DIR / folder_prefix / "boxscores.csv", index=False)
     write_metadata(
         data={
-            "start_date": start_date,
-            "end_date": end_date,
-            "n_games": len(games),
-            "n_boxscores": len(boxscores),
-            "execution_date": get_now(),
+            "boxscores": {
+                "start_date": start_date,
+                "end_date": end_date,
+                "n_games": len(games),
+                "n_boxscores": len(boxscores),
+                "execution_date": get_now(),
+            }
         },
         path=PRE_RAW_DATA_DIR / folder_prefix / "metadata.json",
     )

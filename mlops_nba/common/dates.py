@@ -39,3 +39,15 @@ def convert_eu_to_us(date_str: str):
     if not date_str:
         return None
     return datetime.strptime(date_str, "%d/%m/%Y").strftime("%m/%d/%Y")
+
+
+def convert_duration_to_number(duration_str: str):
+    """Convert duration to number."""
+    if not duration_str:
+        return None
+    try:
+        (m, s) = duration_str.split(":")
+        return float(m) * 60 + float(s)
+    except Exception:
+        print("Error converting duration to number")
+    return None

@@ -68,10 +68,15 @@ safety:
 
 setup: clean-venv add-venv install-dev install
 
+ingest-new-data:
+	python3 -m mlops_nba.data_pipeline.ingest.players --start_date 17/01/2024 --end_date 24/01/2024
+	python3 -m mlops_nba.data_pipeline.ingest.boxscores --start_date 17/01/2024 --end_date 24/01/2024
+
+pre-raw-to-raw:
+	python3 -m mlops_nba.data_pipeline.preraw_to_raw
+
 raw-to-curated:
 	python3 -m mlops_nba.data_pipeline.raw_to_curated
 
-ingest-new-data:
-	python3 -m mlops_nba.data_pipeline.ingest_data --start_date 17/01/2024 --end_date 24/01/2024
 
 run: ingest-new-data
