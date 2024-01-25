@@ -11,7 +11,7 @@ __pycache__/
 .output/
 settings_local.py
 data/
-
+models/
 
 .pytest_cache
 htmlcov
