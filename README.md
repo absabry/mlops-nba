@@ -2,20 +2,20 @@
 
 ## Description
 This project demonstrates the implementation of data pipelines in an AI context. It utilizes DVC (Data Version Control) for data versioning and management. The pipelines are designed to efficiently process and transform data, enabling seamless integration with AI models and workflows.
-We will then use MLFlow to experiment track our experiments, and use it as a model store. 
+We will then use MLFlow to experiment track our experiments, and use it as a model store.
 
 
 ## Requirements
-The requirements for the project are the following:  
+The requirements for the project are the following:
 - python3.9+
 - make command
     - For windows users, you can download make command following this [link](https://sourceforge.net/projects/gnuwin32/files/make/3.81/make-3.81.exe/download?use_mirror=netix&download=). For more details on other versions, follow [this page](https://gnuwin32.sourceforge.net/packages/make.htm)
-    - For linux/mac users, download make command following your ``sudo apt-get update & apt-get -y install make``   
+    - For linux/mac users, download make command following your ``sudo apt-get update & apt-get -y install make``
 
 To check make is correctly installed, type ``make --version``
 
 ## Setup the environment
-Start by running ``make--version`` and ``python --version`` to make sure you have all the prerequists.     
+Start by running ``make--version`` and ``python --version`` to make sure you have all the prerequists.
 
 - Run ``make setup``
 - activate your environement :
@@ -38,3 +38,6 @@ Those command are targeting the **mlops_nba** folder and the configuration is [h
 * Tests:
   * For testing we use `pytest` and target the tests in the **mlops_nba** using `make test`
   * You can generate a coverage report using `make coverage` and a html version using `make coverage-html`
+
+  # Next steps:
+  - Create a preprocessed stage having the aggreation of all currated data.
