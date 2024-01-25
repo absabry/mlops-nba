@@ -3,7 +3,6 @@ VENV=venv
 PYTHON_VERSION=3
 PRECOMMIT=$(VENV)/bin/pre-commit
 PYTHON=$(VENV)/bin/python$(PYTHON_VERSION)
-SAFETY=$(VENV)/bin/safety
 
 ## environnement
 clean-venv:
@@ -63,9 +62,6 @@ clean-logs:
 	find . -path '*/__pycache__*' -delete
 	find . -path '*/.ipynb_checkpoints*' -delete
 
-safety:
-	$(SAFETY) check
-
 setup: clean-venv add-venv install-dev install
 
 start_date = 10/01/2024
@@ -89,4 +85,4 @@ curated-to-preprocessed:
 data-pipeline: ingest-new-data pre-raw-to-raw raw-to-curated
 
 train:
-	$(PYTHON) -m mlops_nba.training_pipeline.training
+	$(PYTHON) -m mlops_nba.training_pipeline.training --input-path first-drop/curated_players-20240125__201445.parquet
