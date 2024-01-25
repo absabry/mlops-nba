@@ -45,9 +45,6 @@ def convert_duration_to_number(duration_str: str):
     """Convert duration to number."""
     if not duration_str:
         return None
-    try:
-        (m, s) = duration_str.split(":")
-        return float(m) * 60 + float(s)
-    except Exception:
-        print("Error converting duration to number")
-    return None
+
+    (m, s) = duration_str.split(":")
+    return float(m) * 60 + float(s)
