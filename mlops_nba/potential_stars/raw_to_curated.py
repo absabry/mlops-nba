@@ -14,22 +14,23 @@ POINTS_THRESHOLD = 10
 EFFICENCY_THRESHOLD = 12
 
 
-def get_file(filename: str):
+def get_file(filename: Path):
     """Load intermediate data from curated data directory."""
     df = pd.read_csv(filename, sep=";", encoding="Windows-1252")
     name = filename.stem
     season = re.search(r"\d{4}-\d{4}", name).group()
-    type_of_matches = name.split("-").pop().strip()
+    type_of_games = name.split("-").pop().strip()
 
+    df["data_period"] = filename.parent.stem
     df["filename"] = name
     df["season"] = season
-    df["period"] = type_of_matches
+    df["game_type"] = type_of_games
     return df
 
 
 def get_raw_data(path: Path):
     """Load intermediate data from curated data directory."""
-    files = path.glob("*.csv")
+    files = path.glob("*/*.csv")
     players = pd.concat(
         [get_file(filename=stat_player) for stat_player in files],
         ignore_index=True,
@@ -69,4 +70,7 @@ if __name__ == "__main__":
     players = create_nba_features(players=players)
     players["rising_stars"] = players.apply(stars_definition, axis=1)
 
-    players.to_parquet(CURATED_DATA_DIR / f"{OUTPUT_FILENAME}-{current_date}.parquet", compression="snappy")
+    players.to_parquet(
+        CURATED_DATA_DIR / f"{OUTPUT_FILENAME}-{current_date}.parquet",
+        compression="snappy",
+    )
