@@ -1,111 +1,70 @@
-import re
-from pathlib import Path
-
+import great_expectations as ge
 import pandas as pd
 
-from mlops_nba.common.dates import get_now
-from mlops_nba.config import CURATED_DATA_DIR, RAW_DATA_DIR
 
-OUTPUT_PRE_ROW = ""
-OUTPUT_ROW = ""
-OUTPUT_CURATED = ""
-OUTPUT_PREPROCESSED = ""
-
-data_prerow = pd.read_csv(OUTPUT_PRE_ROW)
-data_row = pd.read_csv(OUTPUT_ROW)
-data_curated = pd.read_csv(OUTPUT_CURATED)
-data_preprocessed = pd.read_csv(OUTPUT_PREPROCESSED)
-
-
-class prerow_quality:
-    def __init__(self, data_prerow):
+class QualityChecker:
+    def __init__(self, data: pd.DataFrame):
         self.df = ge.from_pandas(data)
-        self.uniquness = self.Uniquness_PlayerTeamPosition()
-        self.max_games = self.Max_NbGames()
-        self.positions = self.Check_Existing_Positions()
+        self.errors = {}
 
-    def Uniquness_PlayerTeamPosition(
-        self,
-    ):
-        return self.df.expect_compound_columns_to_be_unique(
-            column_list=["Player", "Pos", "Tm"]
-        )["success"]
+    def apply(self):
+        """Define the logic for each class"""
 
-    def Max_NbGames(self):
-        return self.df.expect_column_values_to_be_between(
-            column="Age", min_value=1, max_value=70
-        )["success"]
+    def get_status(self):
+        """
+        Return the status of the quality check
+        """
+        if self.errors:
+            return "Failed"
+        return "Success"
 
-    def Check_Existing_Positions(self):
-        return df.expect_column_values_to_be_in_set(
-            column="Pos", value_set=["SG", "SF", "PF", "C", "PG"]
-        )
+    def to_dict(self):
+        """
+        Return the status of the quality check
+        """
+        return {"status": self.get_status(), "errors": self.errors}
 
 
-class row_quality:
-    def __init__(self, data_row):
-        self.df = ge.from_pandas(data)
-        self.uniquness = self.Uniquness_PlayerTeamPosition()
-        self.max_games = self.Max_NbGames()
-        self.positions = self.Check_Existing_Positions()
-
-    def Uniquness_PlayerTeamPosition(self):
-        return self.df.expect_compound_columns_to_be_unique(
-            column_list=["Player", "Pos", "Tm"]
-        )["success"]
-
-    def Max_NbGames(self):
-        return self.df.expect_column_values_to_be_between(
-            column="Age", min_value=1, max_value=70
-        )["success"]
-
-    def Check_Existing_Positions(self):
-        return df.expect_column_values_to_be_in_set(
-            column="Pos", value_set=["SG", "SF", "PF", "C", "PG"]
-        )
-
-
-class curated:
-    def __init__(self, data_curated):
-        self.df = ge.from_pandas(data)
-        self.uniquness = self.Uniquness_PlayerTeamPosition()
-        self.max_games = self.Max_NbGames()
-        self.positions = self.Check_Existing_Positions()
-
-    def Uniquness_PlayerTeamPosition(self):
-        return self.df.expect_compound_columns_to_be_unique(
-            column_list=["Player", "Pos", "Tm"]
-        )["success"]
-
-    def Max_NbGames(self):
-        return self.df.expect_column_values_to_be_between(
-            column="Age", min_value=1, max_value=70
-        )["success"]
-
-    def Check_Existing_Positions(self):
-        return df.expect_column_values_to_be_in_set(
-            column="Pos", value_set=["SG", "SF", "PF", "C", "PG"]
-        )
-
-
-class preprocessed_quality:
-    def __init__(self, data):
-        self.df = ge.from_pandas(data_preprocessed)
-        self.uniquness = self.Uniquness_PlayerTeamPosition()
-        self.max_games = self.Max_NbGames()
-        self.positions = self.Check_Existing_Positions()
-
-    def Uniquness_PlayerTeamPosition(self):
-        return self.df.expect_compound_columns_to_be_unique(column_list=["Player"])[
-            "success"
+class PrerowBoxScoreQuality(QualityChecker):
+    def apply(self):
+        """apply all the checks"""
+        checks = [
+            self.df.expect_column_unique_value_count_to_be_between(
+                column="TEAM_ID", min_value=20, max_value=30
+            ),
+            self.df.expect_compound_columns_to_be_unique(
+                column_list=["PLAYER_ID", "GAME_ID"]
+            ),
         ]
+        for check in checks:
+            if not check["success"]:
+                key = check["expectation_config"]["kwargs"]
+                key = key.get("column") if "column" in key else key.get("column_list")
+                self.errors[key] = check["result"]
 
-    def Max_NbGames(self):
-        return self.df.expect_column_values_to_be_between(
-            column="Age", min_value=1, max_value=70
-        )["success"]
 
-    def Check_Existing_Positions(self):
-        return df.expect_column_values_to_be_in_set(
-            column="Pos", value_set=["SG", "SF", "PF", "C", "PG"]
-        )
+class PrerowPlayerQuality(QualityChecker):
+    def apply(self):
+        """apply all the checks"""
+        checks = [
+            self.df.expect_column_values_to_be_between(
+                column="AGE", min_value=18, max_value=45
+            ),
+            self.df.expect_compound_columns_to_be_unique(column_list=["PLAYER"]),
+        ]
+        for check in checks:
+            if not check["success"]:
+                key = check["expectation_config"]["kwargs"]
+                key = key.get("column") if "column" in key else key.get("column_list")
+                self.errors[key] = check["result"]
+
+
+class RowQuality(QualityChecker):
+    def apply(self):
+        """apply all the checks"""
+        checks = [{"success": True}]
+        for check in checks:
+            if not check["success"]:
+                self.errors[check["expectation_config"]["kwargs"]["column"]] = check[
+                    "result"
+                ]

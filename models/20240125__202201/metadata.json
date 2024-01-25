@@ -1,0 +1,1 @@
+{"model_name": "random-forest", "training_date": "20240125__202201", "accuracy": 0.9835728952772074, "latency": 0.2893869876861572, "training_file": "data/curated/first-drop/curated_players-20240125__201445.parquet"}

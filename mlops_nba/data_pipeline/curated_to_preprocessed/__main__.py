@@ -1,7 +1,8 @@
 import pandas as pd
-from mlops_nba.config import PREPROCESSED_DATA_DIR, CURATED_DATA_DIR
+
 from mlops_nba.common.dates import get_now
-from mlops_nba.common.io import write_metadata, create_folder
+from mlops_nba.common.io import create_folder, write_metadata
+from mlops_nba.config import CURATED_DATA_DIR, PREPROCESSED_DATA_DIR
 
 
 def read_data() -> pd.DataFrame:

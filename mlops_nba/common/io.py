@@ -1,4 +1,5 @@
 import json
+import pickle
 from pathlib import Path
 
 import chardet
@@ -33,6 +34,21 @@ def write_metadata(data: dict, path: Path) -> bool:
         with open(path, "w") as f:
             metadata.update(data)
             json.dump(metadata, f)
+            return True
+    except Exception as e:
+        print(e)
+    return False
+
+
+def save_model(model, path: Path) -> bool:
+    """Save the model to a pickle file.
+    Args:
+        model (sklearn model): model to save
+        path (Path): path to save the model to
+    """
+    try:
+        with open(path, "wb") as f:
+            pickle.dump(model, f)
             return True
     except Exception as e:
         print(e)

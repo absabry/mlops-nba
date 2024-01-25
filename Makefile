@@ -68,22 +68,25 @@ safety:
 
 setup: clean-venv add-venv install-dev install
 
-start_date = 17/01/2024
-end_date = 24/01/2024
-folder_prefix = 2024-01-17_2024-01-24 # first-drop
+start_date = 10/01/2024
+end_date = 16/01/2024
+folder_prefix = 2024-01-10_2024-01-16 # first-drop
 
 ingest-new-data:
-	python3 -m mlops_nba.data_pipeline.ingest.boxscores --start_date $(start_date) --end_date $(end_date)
-	python3 -m mlops_nba.data_pipeline.ingest.players --folder-prefix $(folder_prefix)
-
+	$(PYTHON) -m mlops_nba.data_pipeline.ingest.boxscores --start_date $(start_date) --end_date $(end_date)
+	$(PYTHON) -m mlops_nba.data_pipeline.ingest.players --folder-prefix $(folder_prefix)
 
 pre-raw-to-raw:
-	python3 -m mlops_nba.data_pipeline.pre_raw_to_raw --folder-prefix $(folder_prefix)
+	$(PYTHON) -m mlops_nba.data_pipeline.pre_raw_to_raw --folder-prefix $(folder_prefix)
 
 raw-to-curated:
-	python3 -m mlops_nba.data_pipeline.raw_to_curated --folder-prefix $(folder_prefix)
+	$(PYTHON) -m mlops_nba.data_pipeline.raw_to_curated --folder-prefix $(folder_prefix)
 
 curated-to-preprocessed:
-	python3 -m mlops_nba.data_pipeline.curated_to_preprocessed
+	$(PYTHON) -m mlops_nba.data_pipeline.curated_to_preprocessed
 
-run: curated-to-preprocessed
+
+data-pipeline: ingest-new-data pre-raw-to-raw raw-to-curated
+
+train:
+	$(PYTHON) -m mlops_nba.training_pipeline.training

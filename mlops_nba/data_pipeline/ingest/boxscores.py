@@ -7,6 +7,7 @@ from mlops_nba.common.dates import convert_eu_to_us, get_now
 from mlops_nba.common.io import create_folder, write_metadata
 from mlops_nba.config import PRE_RAW_DATA_DIR
 from mlops_nba.data_pipeline.ingest.utils import create_output_prefix, get_teams
+from mlops_nba.monitoring.data_quality import PrerowBoxScoreQuality
 
 
 def get_games(start_date: str, end_date: str = None) -> None:
@@ -33,6 +34,15 @@ def get_games(start_date: str, end_date: str = None) -> None:
     return nba_games
 
 
+def get_boxscores(game: str) -> pd.DataFrame:
+    """Get boxscores for a list of games."""
+    try:
+        return BoxScoreTraditionalV2(game_id=game, timeout=60).get_data_frames()[0]
+    except Exception as e:
+        print(f"game: {game}", e)
+        return pd.DataFrame()
+
+
 @click.command()
 @click.option("--start_date", required=True, help="Start date in DD/MM/YYYY format.")
 @click.option("--end_date", required=False, help="End date in DD/MM/YYYY format.")
@@ -42,13 +52,13 @@ def main(start_date: str, end_date: str = None) -> pd.DataFrame:
     _ = create_folder(PRE_RAW_DATA_DIR / folder_prefix)
 
     games = get_games(start_date, end_date)
-    boxscores = pd.concat(
-        [
-            BoxScoreTraditionalV2(game_id=game, timeout=60).get_data_frames()[0]
-            for game in games
-        ]
-    )
+    boxscores = pd.concat([get_boxscores(game) for game in games])
     boxscores.to_csv(PRE_RAW_DATA_DIR / folder_prefix / "boxscores.csv", index=False)
+
+    # data-quality checks
+    boxscores_quality = PrerowBoxScoreQuality(boxscores)
+    boxscores_quality.apply()
+
     write_metadata(
         data={
             "boxscores": {
@@ -57,6 +67,7 @@ def main(start_date: str, end_date: str = None) -> pd.DataFrame:
                 "n_games": len(games),
                 "n_boxscores": len(boxscores),
                 "execution_date": get_now(),
+                "quality_checks": boxscores_quality.to_dict(),
             }
         },
         path=PRE_RAW_DATA_DIR / folder_prefix / "metadata.json",

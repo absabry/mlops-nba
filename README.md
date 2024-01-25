@@ -40,4 +40,6 @@ Those command are targeting the **mlops_nba** folder and the configuration is [h
   * You can generate a coverage report using `make coverage` and a html version using `make coverage-html`
 
   # Next steps:
-  - Create a preprocessed stage having the aggreation of all currated data.
+  - Create a preprocessed stage having the aggreation of all currated data
+  - Implmenet data-quality for all data stages
+  - Add unit and integration tests for all pipelines (Github actions)

@@ -1,5 +1,6 @@
 import click
 import pandas as pd
+from monitoring.data_quality import PrerowBoxScoreQuality, PrerowPlayerQuality
 
 from mlops_nba.common.dates import convert_duration_to_number, get_now
 from mlops_nba.common.io import create_folder, write_metadata

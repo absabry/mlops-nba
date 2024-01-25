@@ -6,6 +6,7 @@ from mlops_nba.common.dates import get_now
 from mlops_nba.common.io import write_metadata
 from mlops_nba.config import PRE_RAW_DATA_DIR, SEASON
 from mlops_nba.data_pipeline.ingest.utils import get_teams
+from mlops_nba.monitoring.data_quality import PrerowPlayerQuality
 
 
 @click.command()
@@ -23,6 +24,10 @@ def main(folder_prefix: str) -> None:
         ]
     )
 
+    # data-quality checks
+    players_quality = PrerowPlayerQuality(players)
+    players_quality.apply()
+
     players.to_csv(PRE_RAW_DATA_DIR / folder_prefix / "players.csv", index=False)
     write_metadata(
         data={
@@ -30,6 +35,7 @@ def main(folder_prefix: str) -> None:
                 "n_players": len(players),
                 "execution_date": get_now(),
                 "folder_prefix": folder_prefix,
+                "quality": players_quality.to_dict(),
             }
         },
         path=PRE_RAW_DATA_DIR / folder_prefix / "metadata.json",
