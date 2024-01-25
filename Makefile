@@ -74,10 +74,10 @@ ingest-new-data:
 
 
 pre-raw-to-raw:
-	python3 -m mlops_nba.data_pipeline.preraw_to_raw --folder-prefix 2024-01-17_2024-01-24
+	python3 -m mlops_nba.data_pipeline.pre_raw_to_raw --folder-prefix 2024-01-17_2024-01-24
 
 raw-to-curated:
-	python3 -m mlops_nba.data_pipeline.raw_to_curated.main --folder-prefix 2024-01-17_2024-01-24
+	python3 -m mlops_nba.data_pipeline.raw_to_curated --folder-prefix 2024-01-17_2024-01-24
 
 
 run: raw-to-curated
