@@ -94,10 +94,10 @@ def main(folder_prefix: str):
     )
     write_metadata(
         data={
+            "execution_date": get_now(),
             "from": "raw",
             "to": "curated",
             "folder_prefix": folder_prefix,
-            "file_type": "parquet",
             "n_transformation": 2,
             "new_columns": ["efficency", "rising_stars"],
             "n_players": len(players),

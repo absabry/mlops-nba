@@ -68,16 +68,22 @@ safety:
 
 setup: clean-venv add-venv install-dev install
 
+start_date = 17/01/2024
+end_date = 24/01/2024
+folder_prefix = 2024-01-17_2024-01-24 # first-drop
+
 ingest-new-data:
-	python3 -m mlops_nba.data_pipeline.ingest.boxscores --start_date 17/01/2024 --end_date 24/01/2024
-	python3 -m mlops_nba.data_pipeline.ingest.players --folder-prefix 2024-01-17_2024-01-24
+	python3 -m mlops_nba.data_pipeline.ingest.boxscores --start_date $(start_date) --end_date $(end_date)
+	python3 -m mlops_nba.data_pipeline.ingest.players --folder-prefix $(folder_prefix)
 
 
 pre-raw-to-raw:
-	python3 -m mlops_nba.data_pipeline.pre_raw_to_raw --folder-prefix 2024-01-17_2024-01-24
+	python3 -m mlops_nba.data_pipeline.pre_raw_to_raw --folder-prefix $(folder_prefix)
 
 raw-to-curated:
-	python3 -m mlops_nba.data_pipeline.raw_to_curated --folder-prefix 2024-01-17_2024-01-24
+	python3 -m mlops_nba.data_pipeline.raw_to_curated --folder-prefix $(folder_prefix)
 
+curated-to-preprocessed:
+	python3 -m mlops_nba.data_pipeline.curated_to_preprocessed
 
-run: raw-to-curated
+run: curated-to-preprocessed

@@ -53,6 +53,7 @@ def transformation(dataframe: pd.DataFrame) -> pd.DataFrame:
     dataframe["mins"] = (
         dataframe["MIN"].fillna("0:00").apply(convert_duration_to_number)
     )
+    dataframe["AGE"] = dataframe["AGE"].fillna(0).astype(int)
     return dataframe
 
 
@@ -108,12 +109,21 @@ def main(folder_prefix: str):
     boxscores = pd.read_csv(PRE_RAW_DATA_DIR / folder_prefix / "boxscores.csv")
     players = pd.read_csv(PRE_RAW_DATA_DIR / folder_prefix / "players.csv")
 
-    tr_boxscores = transformation(boxscores)
-    boxscores_with_players = tr_boxscores.merge(players, on="PLAYER_ID", how="left")
-    raw_data = aggregate(boxscores_with_players).rename(columns=mapping)
+    # transformation and aggregations
+    boxscores_with_players = boxscores.merge(players, on="PLAYER_ID", how="left")
+    tr_boxscores_with_players = transformation(boxscores_with_players)
+    raw_data = aggregate(tr_boxscores_with_players).rename(columns=mapping)
+
+    # remove columns that are not needed from the api
+    raw_data = raw_data.reset_index()[mapping.values()]
+
+    # output results
     raw_data.to_parquet(RAW_DATA_DIR / folder_prefix / f"{now}-raw_data.parquet")
     write_metadata(
         {
+            "from": "pre_raw",
+            "to": "raw",
+            "execution_date": get_now(),
             "raw_data": f"{now}-raw_data.parquet",
             "folder_prefix": folder_prefix,
             "n_data": len(raw_data),
