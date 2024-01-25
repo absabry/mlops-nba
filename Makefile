@@ -68,7 +68,10 @@ safety:
 
 setup: clean-venv add-venv install-dev install
 
-extract-rising-stars:
-	python3 -m mlops_nba.potential_stars.raw_to_curated
+raw-to-curated:
+	python3 -m mlops_nba.data_pipeline.raw_to_curated
 
-run: extract-rising-stars
+ingest-new-data:
+	python3 -m mlops_nba.data_pipeline.ingest_data --start_date 17/01/2024 --end_date 24/01/2024
+
+run: ingest-new-data
