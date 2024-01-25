@@ -1,9 +1,9 @@
 import click
 import pandas as pd
-import pandas as pd
-from mlops_nba.config import PRE_RAW_DATA_DIR, RAW_DATA_DIR
+
 from mlops_nba.common.dates import convert_duration_to_number, get_now
-from mlops_nba.common.io import write_metadata, create_folder
+from mlops_nba.common.io import create_folder, write_metadata
+from mlops_nba.config import PRE_RAW_DATA_DIR, RAW_DATA_DIR
 
 # 'eFG%', "Rk" --> not needed
 mapping = {

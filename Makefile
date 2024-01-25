@@ -77,7 +77,7 @@ pre-raw-to-raw:
 	python3 -m mlops_nba.data_pipeline.preraw_to_raw --folder-prefix 2024-01-17_2024-01-24
 
 raw-to-curated:
-	python3 -m mlops_nba.data_pipeline.raw_to_curated
+	python3 -m mlops_nba.data_pipeline.raw_to_curated.main --folder-prefix 2024-01-17_2024-01-24
 
 
-run: pre-raw-to-raw
+run: raw-to-curated

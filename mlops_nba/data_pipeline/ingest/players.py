@@ -1,6 +1,7 @@
 import click
 import pandas as pd
 from nba_api.stats.endpoints.commonteamroster import CommonTeamRoster
+
 from mlops_nba.common.dates import get_now
 from mlops_nba.common.io import write_metadata
 from mlops_nba.config import PRE_RAW_DATA_DIR, SEASON

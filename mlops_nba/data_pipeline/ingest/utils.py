@@ -1,8 +1,9 @@
 """Utils relateed to data ingestion module
 """
 
-from mlops_nba.common.dates import get_day, get_today
 from nba_api.stats.static import teams
+
+from mlops_nba.common.dates import get_day, get_today
 
 
 def get_teams():
