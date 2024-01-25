@@ -85,4 +85,7 @@ curated-to-preprocessed:
 data-pipeline: ingest-new-data pre-raw-to-raw raw-to-curated
 
 train:
-	$(PYTHON) -m mlops_nba.training_pipeline.training --input-path first-drop/curated_players-20240125__201445.parquet
+	$(PYTHON) -m mlops_nba.training_pipeline --input-path first-drop/curated_players-20240125__201445.parquet
+
+inference: # you need to create the inference input yourself.
+	$(PYTHON) -m mlops_nba.inference_pipeline --input-path first-drop/curated_players-20240125__201445.parquet

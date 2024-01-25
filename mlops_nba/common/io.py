@@ -53,3 +53,16 @@ def save_model(model, path: Path) -> bool:
     except Exception as e:
         print(e)
     return False
+
+
+def load_model(path: Path):
+    """Load a model from a pickle file.
+    Args:
+        path (Path): path to load the model from
+    """
+    try:
+        with open(path, "rb") as f:
+            return pickle.load(f)
+    except Exception as e:
+        print(e)
+    return None

@@ -11,6 +11,7 @@ from mlops_nba.data_pipeline.raw_to_curated.struct import (
     ReadFirstDrop,
     ReadIngested,
 )
+from mlops_nba.data_pipeline.raw_to_curated.transformations import create_nba_features
 
 # can be automated in next versions
 AGE_THRESHOLD = 23
@@ -44,21 +45,6 @@ def get_raw_data(path: Path):
     players = pd.concat(
         [get_file(filename=stat_player, reader=reader) for stat_player in files],
         ignore_index=True,
-    )
-    return players
-
-
-def create_nba_features(players: pd.DataFrame) -> pd.DataFrame:
-    """Create features from raw data."""
-    players["efficency"] = (
-        players.PTS
-        + players.TRB
-        + players.AST
-        + players.STL
-        + players.BLK
-        - (players.FGA - players.FG)
-        - (players.FTA - players.FT)
-        - players.TOV
     )
     return players
 
